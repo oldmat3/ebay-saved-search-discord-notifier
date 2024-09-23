@@ -7,16 +7,6 @@ This Python script checks eBay for new auction listings based on custom search c
 
 First, you'll need to install the necessary dependencies:
 
-
-pip install ebaysdk requests
-# eBay Listings Checker with Discord Notifications
-
-This Python script checks eBay for new auction listings based on custom search criteria, and sends notifications of new listings to a specified Discord webhook. The script runs every minute and supports multiple search configurations.
-
-1. Install Required Packages
-
-First, you'll need to install the necessary dependencies:
-
 ```bash
 pip install ebaysdk requests
 ```
