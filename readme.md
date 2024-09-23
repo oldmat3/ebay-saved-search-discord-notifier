@@ -1,24 +1,3 @@
-
-# eBay Listings Checker with Discord Notifications
-
-This Python script checks eBay for new auction listings based on custom search criteria, and sends notifications of new listings to a specified Discord webhook. The script runs every minute and supports multiple search configurations.
-
-1. Install Required Packages
-
-First, you'll need to install the necessary dependencies:
-
-```bash
-pip install ebaysdk requests
-```
-
-2. Create an eBay Developer Account
-
-To use the eBay API, you'll need to create an eBay developer account and get your API keys.
-
-Go to the eBay Developer Program.
-Sign up or log in with your eBay account.
-Create an application and get the App ID (this is used in the script to authenticate with the eBay API).
-
 # eBay Listings Checker with Discord Notifications
 
 This Python script checks eBay for new auction listings based on custom search criteria, and sends notifications of new listings to a specified Discord webhook. The script runs every minute and supports multiple search configurations.
