@@ -2,16 +2,17 @@ from ebaysdk.finding import Connection as Finding
 from datetime import datetime
 import requests
 import time
+from ebaysdk.exception import ConnectionError
 
 # eBay API credentials 
-app_id = 'YourActualAppIDFromEBay'
+app_id = ''
 # Discord webhook URL
-discord_webhook_url = 'https://discord.com/api/webhooks/your-webhook-id'
+discord_webhook_url = ''
 
 # To store previously checked listings for each search
 previous_listings = {}
 
-# send a message to Discord
+# Send a message to Discord
 def send_to_discord(title, price, url, search_name):
     data = {
         "content": f"**New Listing Found for '{search_name}'!**\n**Title**: {title}\n**Price**: ${price}\n**URL**: {url}"
@@ -22,24 +23,34 @@ def send_to_discord(title, price, url, search_name):
     else:
         print(f"Failed to send message to Discord. Status code: {result.status_code}")
 
-# check new listings
+# Check new listings
 def check_ebay_listings(search_name, search_params):
     global previous_listings
 
-    # connect to the eBay API
-    api = Finding(appid=app_id, config_file=None, siteid="15")  # siteid 15 is for eBay Australia
+    # Connect to the eBay API
+    api = Finding(appid=app_id, config_file=None, globalid="EBAY-AU")  # Only set the globalid for eBay Australia
 
     # Execute the search query
-    response = api.execute('findItemsAdvanced', search_params)
+    try:
+        response = api.execute('findItemsAdvanced', search_params)
+    except ConnectionError as e:
+        print(f"eBay API Connection Error: {e}")
+        print(f"Detailed error response: {e.response.dict()}")  # Print detailed error response for debugging
+        return
 
     # Get the listings
-    new_listings = []
-    items = response.reply.searchResult.item
+    if hasattr(response.reply, 'searchResult') and hasattr(response.reply.searchResult, 'item'):
+        items = response.reply.searchResult.item
+        print(f"Total listings found for '{search_name}': {len(items)}")
+    else:
+        print(f"No listings found for '{search_name}'")
+        return
 
+    new_listings = []
     for item in items:
         title = item.title
         price = item.sellingStatus.currentPrice.value
-        url = item.viewItemURL
+        url = item.viewItemURL.replace('ebay.com', 'ebay.com.au')  # Update URL to point to eBay Australia
         start_time = item.listingInfo.startTime
 
         # Create a unique listing entry
@@ -51,6 +62,9 @@ def check_ebay_listings(search_name, search_params):
         }
         new_listings.append(listing_data)
 
+        # Print all available listings for diagnostics
+        print(f"Listing - Title: {title}, Price: ${price}, URL: {url}, Start Time: {start_time}")
+
     # Check if any new listings exist for this specific search
     if search_name in previous_listings:
         for listing in new_listings:
@@ -59,6 +73,11 @@ def check_ebay_listings(search_name, search_params):
                 send_to_discord(listing['title'], listing['price'], listing['url'], search_name)
             else:
                 print(f"Already checked listing for '{search_name}': {listing['title']}")
+    else:
+        print(f"First time search for '{search_name}', all listings are new.")
+        # Notify about all new listings on the first run
+        for listing in new_listings:
+            send_to_discord(listing['title'], listing['price'], listing['url'], search_name)
 
     # Update the previous listings for this search
     previous_listings[search_name] = new_listings
@@ -85,18 +104,53 @@ searches = [
         }
     },
     {
-        'name': 'iPad 5th Generation under $80',
+        'name': 'iPad 5th Generation under $100',
         'params': {
             'keywords': 'ipad',
             'categoryId': '171485',  # Category for Tablets & eBook Readers
             'itemFilter': [
                 {'name': 'ListingType', 'value': 'Auction'},
-                {'name': 'MaxPrice', 'value': '80'},
+                {'name': 'MaxPrice', 'value': '100'},
                 {'name': 'LocatedIn', 'value': 'AU'},  # Australia only
                 {'name': 'Condition', 'value': '3000'},  # Used condition
             ],
             'aspectFilter': [
                 {'aspectName': 'Model', 'aspectValueName': 'Apple iPad (5th Generation)'}
+            ],
+            'sortOrder': 'StartTimeNewest',
+            'paginationInput': {'entriesPerPage': 10}
+        }
+    },
+    {
+        'name': 'iPad 6th Generation under $120',
+        'params': {
+            'keywords': 'ipad',
+            'categoryId': '171485',  # Category for Tablets & eBook Readers
+            'itemFilter': [
+                {'name': 'ListingType', 'value': 'Auction'},
+                {'name': 'MaxPrice', 'value': '120'},
+                {'name': 'LocatedIn', 'value': 'AU'},  # Australia only
+                {'name': 'Condition', 'value': '3000'},  # Used condition
+            ],
+            'aspectFilter': [
+                {'aspectName': 'Model', 'aspectValueName': 'Apple iPad (6th Generation)'}
+            ],
+            'sortOrder': 'StartTimeNewest',
+            'paginationInput': {'entriesPerPage': 10}
+        }
+    },
+    {
+        'name': 'iPad Pro 1st Generation under $150',
+        'params': {
+            'keywords': 'ipad',
+            'categoryId': '171485',  # Category for Tablets & eBook Readers
+            'itemFilter': [
+                {'name': 'ListingType', 'value': 'Auction'},  # Auction listings only
+                {'name': 'MaxPrice', 'value': '150'},  # Maximum price of $150
+                {'name': 'LocatedIn', 'value': 'AU'},  # Australia only
+            ],
+            'aspectFilter': [
+                {'aspectName': 'Model', 'aspectValueName': 'Apple iPad Pro (1st Generation)'}
             ],
             'sortOrder': 'StartTimeNewest',
             'paginationInput': {'entriesPerPage': 10}
