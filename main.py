@@ -86,24 +86,6 @@ def check_ebay_listings(search_name, search_params):
 # Search configurations
 searches = [
     {
-        'name': 'iPad Air 2 under $80',
-        'params': {
-            'keywords': 'ipad',
-            'categoryId': '171485',  # Category for Tablets & eBook Readers
-            'itemFilter': [
-                {'name': 'ListingType', 'value': 'Auction'},
-                {'name': 'MaxPrice', 'value': '80'},
-                {'name': 'LocatedIn', 'value': 'AU'},  # Australia only
-                {'name': 'Condition', 'value': '3000'},  # Used condition
-            ],
-            'aspectFilter': [
-                {'aspectName': 'Model', 'aspectValueName': 'Apple iPad Air 2'}
-            ],
-            'sortOrder': 'StartTimeNewest',
-            'paginationInput': {'entriesPerPage': 10}
-        }
-    },
-    {
         'name': 'iPad 5th Generation under $100',
         'params': {
             'keywords': 'ipad',
@@ -121,41 +103,6 @@ searches = [
             'paginationInput': {'entriesPerPage': 10}
         }
     },
-    {
-        'name': 'iPad 6th Generation under $120',
-        'params': {
-            'keywords': 'ipad',
-            'categoryId': '171485',  # Category for Tablets & eBook Readers
-            'itemFilter': [
-                {'name': 'ListingType', 'value': 'Auction'},
-                {'name': 'MaxPrice', 'value': '120'},
-                {'name': 'LocatedIn', 'value': 'AU'},  # Australia only
-                {'name': 'Condition', 'value': '3000'},  # Used condition
-            ],
-            'aspectFilter': [
-                {'aspectName': 'Model', 'aspectValueName': 'Apple iPad (6th Generation)'}
-            ],
-            'sortOrder': 'StartTimeNewest',
-            'paginationInput': {'entriesPerPage': 10}
-        }
-    },
-    {
-        'name': 'iPad Pro 1st Generation under $150',
-        'params': {
-            'keywords': 'ipad',
-            'categoryId': '171485',  # Category for Tablets & eBook Readers
-            'itemFilter': [
-                {'name': 'ListingType', 'value': 'Auction'},  # Auction listings only
-                {'name': 'MaxPrice', 'value': '150'},  # Maximum price of $150
-                {'name': 'LocatedIn', 'value': 'AU'},  # Australia only
-            ],
-            'aspectFilter': [
-                {'aspectName': 'Model', 'aspectValueName': 'Apple iPad Pro (1st Generation)'}
-            ],
-            'sortOrder': 'StartTimeNewest',
-            'paginationInput': {'entriesPerPage': 10}
-        }
-    }
 ]
 
 # Run the function every minute for all searches
