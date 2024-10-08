@@ -13,7 +13,7 @@ webhook_urls = {
     'iPad 5th Generation under $100': 'https://discord.com/api/webhooks/1290178989704351846/KF3yFkKOqu36K9qqEk5_jL28HoWpqGaLu8XzlbujKYSkpPycbI6mDNa2WSvv_7q0ytxk',
     'iPad 6th Generation under $120': 'https://discord.com/api/webhooks/1291003494136021013/jpP_7qOft1s9qYb4N1vD86Zun22xfISS1ydY4n90_z2m8g6xXpCTCFrANUsdpByephCP',
     'iPad Pro 1st Generation under $150': 'https://discord.com/api/webhooks/1290178988395859979/WtfE0FjH7H1ofteyFjcqIPRFdCSgiODfpiHG1kdjp0zVnjUSapPx8aJ2eQvBYcRSFlYv',
-    'Status Updates': 'https://discord.com/api/webhooks/1291251367075119204/iIYyRVY4KNviTdfjr8FvuYGaaFcNqHKjW_N8jOm28pHqfYzqXrKSgddMc2GkkB_16irD'  # New webhook for hourly status
+
 }
 
 # To store previously checked listings
@@ -78,29 +78,21 @@ def check_ebay_listings(search_name, search_params):
     new_listings = []
     for item in items:
         title = item.title
-        price = float(item.sellingStatus.currentPrice.value)
-        url = item.viewItemURL.replace('ebay.com', 'ebay.com.au')
+        price = float(item.sellingStatus.currentPrice.value)  # Convert price to float
+        url = item.viewItemURL.replace('ebay.com', 'ebay.com.au')  
         start_time = item.listingInfo.startTime
         description = item.title
 
-        # Find the 'MaxPrice' value
-        max_price = None
-        for filter_item in search_params['itemFilter']:
-            if filter_item['name'] == 'MaxPrice':
-                max_price = float(filter_item['value'])
-                break
-        
-        if max_price is None:
-            print(f"MaxPrice filter not found for '{search_name}'")
-            continue
-
+        # Check if the price exceeds the maximum set price (sanity check)
+        max_price = float(search_params['itemFilter'][0]['value'])
         if price > max_price:
             print(f"Listing for '{title}' exceeds max price: ${price}")
-            continue
+            continue  # Skip listings above the max price
 
+        # Check for specific keywords in the description
         if any(keyword in description.lower() for keyword in keywords_to_check):
             print(f"Keyword '{keywords_to_check}' found in listing for '{search_name}': {title}")
-            continue
+            continue  # Skip listings that contain unwanted keywords
 
         # Create a unique listing entry
         listing_data = {
@@ -114,9 +106,7 @@ def check_ebay_listings(search_name, search_params):
         # Print all available listings for diagnostics
         print(f"Listing - Title: {title}, Price: ${price}, URL: {url}, Start Time: {start_time}")
 
-    # Continue with previous listing checks
-
-    # Check if any new listings exist for this search
+    # Compare with previous listings to identify new ones
     if search_name in previous_listings:
         previous_urls = [listing['url'] for listing in previous_listings[search_name]]
         for listing in new_listings:
@@ -142,7 +132,7 @@ searches = [
             'keywords': 'ipad',
             'categoryId': '171485',  # Category for Tablets & eBook Readers
             'itemFilter': [
-                {'name': 'ListingType', 'value': 'Auction'},
+
                 {'name': 'MaxPrice', 'value': '80'},
                 {'name': 'LocatedIn', 'value': 'AU'},  
                 {'name': 'Condition', 'value': '3000'},  
@@ -160,7 +150,7 @@ searches = [
             'keywords': 'ipad',
             'categoryId': '171485', 
             'itemFilter': [
-                {'name': 'ListingType', 'value': 'Auction'},
+
                 {'name': 'MaxPrice', 'value': '100'},
                 {'name': 'LocatedIn', 'value': 'AU'},  
                 {'name': 'Condition', 'value': '3000'},  
@@ -178,7 +168,7 @@ searches = [
             'keywords': 'ipad',
             'categoryId': '171485',  
             'itemFilter': [
-                {'name': 'ListingType', 'value': 'Auction'},
+
                 {'name': 'MaxPrice', 'value': '120'},
                 {'name': 'LocatedIn', 'value': 'AU'},  
                 {'name': 'Condition', 'value': '3000'}, 
@@ -196,7 +186,7 @@ searches = [
             'keywords': 'ipad',
             'categoryId': '171485',  
             'itemFilter': [
-                {'name': 'ListingType', 'value': 'Auction'}, 
+
                 {'name': 'MaxPrice', 'value': '150'}, 
                 {'name': 'LocatedIn', 'value': 'AU'}, 
             ],
@@ -209,11 +199,15 @@ searches = [
     }
 ]
 
-# Run the function every minute for all searches
-if __name__ == "__main__":
-    send_start_notification()  # Notify all webhooks that the bot has started
-    while True:
-        print("Checking for new eBay listings...")
-        for search in searches:
-            check_ebay_listings(search['name'], search['params'])
-        time.sleep(60)  # Wait 1 minute before checking again
+# Send start notification once when the bot starts
+send_start_notification()
+
+# Bot loop to search eBay listings periodically
+while True:
+    # Check each search query
+    for search in searches:
+        check_ebay_listings(search['name'], search['params'])
+
+    # Wait before running the loop again (in seconds)
+    print('waiting 60 secs...')
+    time.sleep(60)
