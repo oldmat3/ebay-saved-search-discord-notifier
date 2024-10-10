@@ -13,6 +13,7 @@ webhook_urls = {
     'iPad 5th Generation under $100': 'https://discord.com/api/webhooks/1290178989704351846/KF3yFkKOqu36K9qqEk5_jL28HoWpqGaLu8XzlbujKYSkpPycbI6mDNa2WSvv_7q0ytxk',
     'iPad 6th Generation under $120': 'https://discord.com/api/webhooks/1291003494136021013/jpP_7qOft1s9qYb4N1vD86Zun22xfISS1ydY4n90_z2m8g6xXpCTCFrANUsdpByephCP',
     'iPad Pro 1st Generation under $150': 'https://discord.com/api/webhooks/1290178988395859979/WtfE0FjH7H1ofteyFjcqIPRFdCSgiODfpiHG1kdjp0zVnjUSapPx8aJ2eQvBYcRSFlYv',
+    'iPad mini 4 under $100': 'https://discord.com/api/webhooks/1293757309457141780/noOfRKWYzASLHQob2BxtD6auEC1s2mQKvEfkSiixEOaLJsblvTjV-fwhplwTRZEDKHLR',
 
 }
 
@@ -196,6 +197,23 @@ searches = [
             'sortOrder': 'StartTimeNewest',
             'paginationInput': {'entriesPerPage': 30}
         }
+    },
+    {
+        'name': 'iPad mini 4 under $100',
+        'params': {
+            'keywords': 'ipad',
+            'categoryId': '171485',  
+            'itemFilter': [
+
+                {'name': 'MaxPrice', 'value': '100'}, 
+                {'name': 'LocatedIn', 'value': 'AU'}, 
+            ],
+            'aspectFilter': [
+                {'aspectName': 'Model', 'aspectValueName': 'Apple iPad mini (4th Generation)'}
+            ],
+            'sortOrder': 'StartTimeNewest',
+            'paginationInput': {'entriesPerPage': 30}
+        }
     }
 ]
 
@@ -211,3 +229,4 @@ while True:
     # Wait before running the loop again (in seconds)
     print('waiting 60 secs...')
     time.sleep(60)
+ 
