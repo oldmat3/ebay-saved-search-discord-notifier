@@ -227,8 +227,8 @@ while True:
         check_ebay_listings(search['name'], search['params'])
 
     # Wait before running the loop again (in seconds)
-    print('waiting 60 secs...')
-    time.sleep(60)
+    print('waiting 10 mins...')
+    time.sleep(600)
 
     #test
  
